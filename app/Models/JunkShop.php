@@ -7,13 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Junkshop extends Model
 {
     protected $fillable = [
-        'name', 'operator_name', 'address', 'latitude', 'longitude',
+        'owner_user_id', 'name', 'operator_name', 'address', 'latitude', 'longitude',
         'operating_hours', 'materials_accepted', 'is_accredited_tsd',
     ];
+    public function owner() { return $this->belongsTo(User::class, 'owner_user_id'); }
+    
     protected $casts = ['materials_accepted' => 'array', 'is_accredited_tsd' => 'boolean'];
 
     public function materialPrices() { return $this->hasMany(MaterialPrice::class); }
     public function transactions()   { return $this->hasMany(Transaction::class); }
+
+    public function pickupRequests()  { return $this->hasMany(PickupRequest::class); }
+
 
     public function getOpenStatusAttribute(): array
     {

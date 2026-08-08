@@ -44,4 +44,10 @@ public function redemptions()   { return $this->hasMany(Redemption::class); }
 
 public function isResident(): bool { return $this->role === 'resident'; }
 
+public function junkshop() { return $this->hasOne(Junkshop::class, 'owner_user_id'); }
+public function pickupRequestsMade() { return $this->hasMany(PickupRequest::class, 'resident_user_id'); }
+
+public function isJunkshopOperator(): bool { return $this->role === 'junkshop'; }
+
+
 }
