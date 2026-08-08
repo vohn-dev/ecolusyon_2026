@@ -1,0 +1,26 @@
+:root{
+  --ink:#122019;
+  --ink-soft:#3c4c44;
+  --paper:#F1F3EA;
+  --paper-raised:#FFFFFF;
+  --line:#DCE0D2;
+
+  --tapon:#1E6F6B;      /* TaponWise (scan) */
+  --tapon-tint:#DCEEEC;
+  --bantay:#2C4A78;     /* BantayBaha (flood report) */
+  --bantay-tint:#DEE6F1;
+  --junk:#B8791E;       /* JunkConnect (marketplace) */
+  --junk-tint:#F3E3C6;
+  --siklo:#3E7D3A;      /* SikloPoints (rewards) */
+  --siklo-tint:#DEEBDB;
+  --hazard:#C0503A;     /* hazard / severity-full */
+  --hazard-tint:#F3DCD6;
+}
+
+body{ background: var(--paper); color: var(--ink); }
+.card{ border-radius: 14px; border-color: var(--line); }
+.badge-tapon{ background: var(--tapon-tint); color: var(--tapon); }
+.badge-bantay{ background: var(--bantay-tint); color: var(--bantay); }
+.badge-junk{ background: var(--junk-tint); color: var(--junk); }
+.badge-siklo{ background: var(--siklo-tint); color: var(--siklo); }
+.badge-hazard{ background: var(--hazard-tint); color: var(--hazard); }
