@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WasteScanController;
+use App\Http\Controllers\FloodReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,17 +21,20 @@ Route::middleware(['auth', 'resident'])->group(function () {
 
     Route::get('/scan/{wasteScan}/guide', [WasteScanController::class, 'guide'])->name('scan.guide');
 
+    Route::get('/report', [FloodReportController::class, 'index'])->name('reports.index'); // "Flood Report Status" list
+    Route::get('/report/create', [FloodReportController::class, 'create'])->name('reports.create');
+    Route::post('/report', [FloodReportController::class, 'store'])->name('reports.store');
+    Route::post('/report/{floodReport}/verify-cleanup', [FloodReportController::class, 'verifyCleanup'])->name('reports.verify-cleanup');
+
+
 });
-
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/heatmap', [FloodReportController::class, 'heatmap'])->name('heatmap');
 
 require __DIR__.'/auth.php';
