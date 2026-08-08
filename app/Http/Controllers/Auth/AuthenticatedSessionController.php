@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended($this->homeRouteFor($request->user()));
     }
 
     /**
@@ -44,4 +44,13 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    private function homeRouteFor(\App\Models\User $user): string
+    {
+        return match ($user->role) {
+            'junkshop' => route('operator.dashboard'),
+            default => route('dashboard'),
+        };
+    }
+
 }

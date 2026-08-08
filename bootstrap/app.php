@@ -11,8 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['resident' => \App\Http\Middleware\EnsureUserIsResident::class]);
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            'resident' => \App\Http\Middleware\EnsureUserIsResident::class,
+            'junkshop' => \App\Http\Middleware\EnsureUserIsJunkshopOperator::class,
+            'shop.registered' => \App\Http\Middleware\EnsureShopIsRegistered::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
