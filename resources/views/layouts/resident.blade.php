@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/ecolusyon.css') }}">
+    @stack('styles')
     <style>
         body{padding-bottom:78px;}
         .topbar{background:var(--ink);color:#EDEFE6;}
@@ -16,7 +17,30 @@
         .tabbar a{color:var(--ink-soft);text-decoration:none;font-size:11px;text-align:center;flex:1;}
         .tabbar a.active{color:var(--siklo);font-weight:600;}
         .tabbar i{display:block;font-size:19px;margin-bottom:2px;}
+        .tabbar-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font: inherit;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+        }
+
+        .tabbar form {
+            flex: 1;
+            display: flex;
+        }
     </style>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#122019">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
 </head>
 <body>
     <div class="topbar d-flex align-items-center justify-content-between px-3 py-2">
@@ -29,7 +53,10 @@
 
     <main class="container py-3" style="max-width:480px;">
         @if (session('status'))
-            <div class="alert alert-success py-2">{{ session('status') }}</div>
+            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                {{ session('status') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         @endif
         @yield('content')
     </main>
@@ -54,5 +81,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch((err) => {
+                    console.warn('Service worker registration failed:', err);
+                });
+            });
+        }
+    </script>
+
 </body>
 </html>

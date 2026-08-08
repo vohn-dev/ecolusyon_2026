@@ -46,7 +46,7 @@ class RewardsController extends Controller
     }
 
     public function leaderboard()
-    {        
+    {
         $top = User::where('role', 'resident')
             ->orderByDesc('total_points')
             ->limit(10)

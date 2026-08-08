@@ -14,4 +14,5 @@ class Transaction extends Model
 
     public function resident() { return $this->belongsTo(User::class, 'household_user_id'); }
     public function junkshop() { return $this->belongsTo(Junkshop::class); }
+
 }

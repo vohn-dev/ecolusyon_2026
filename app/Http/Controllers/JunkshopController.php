@@ -15,12 +15,29 @@ class JunkshopController extends Controller
 
         $junkshops = Junkshop::with('materialPrices')
             ->when($material, fn ($q) => $q->whereJsonContains('materials_accepted', $material))
-            ->get();
+            ->paginate(3)
+            ->withQueryString();
 
-        $materials = ['PET', 'HDPE', 'cardboard', 'scrap_metal', 'aluminum', 'copper', 'e_waste'];
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('market._junkshop-items', ['junkshops' => $junkshops])->render(),
+                'has_more' => $junkshops->hasMorePages(),
+            ]);
+        }
 
-        return view('market.index', compact('junkshops', 'materials', 'material'));
+        $materialIcons = [
+            'PET' => 'bi-cup-straw',
+            'HDPE' => 'bi-droplet-half',
+            'cardboard' => 'bi-box-seam',
+            'scrap_metal' => 'bi-nut',
+            'aluminum' => 'bi-recycle',
+            'copper' => 'bi-lightning-charge',
+            'e_waste' => 'bi-cpu',
+        ];
+
+        return view('market.index', compact('junkshops', 'materialIcons', 'material'));
     }
+
 
     public function show(Junkshop $junkshop)
     {
@@ -38,7 +55,7 @@ class JunkshopController extends Controller
 
         $price = $junkshop->materialPrices()
             ->where('material_type', $validated['material_type'])
-            ->firstOrFail(); // matches REST spec: material must have an active price row
+            ->firstOrFail(); 
 
         $isEwaste = (bool) ($validated['is_ewaste'] ?? false);
         $priceTotal = round($price->price_per_kg * $validated['weight_kg'], 2);

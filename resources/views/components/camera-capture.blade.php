@@ -1,6 +1,6 @@
 @props(['name' => 'photo', 'required' => true])
-
-div class="camera-capture" data-input-name="{{ $name }}">
+ 
+<div class="camera-capture" data-input-name="{{ $name }}">
     <div class="camera-capture__preview mb-2" style="display:none;">
         <img class="camera-capture__image img-fluid rounded" alt="Captured photo preview">
     </div>
@@ -25,4 +25,3 @@ div class="camera-capture" data-input-name="{{ $name }}">
  
     @error($name) <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
-

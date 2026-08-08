@@ -14,4 +14,48 @@ class Junkshop extends Model
 
     public function materialPrices() { return $this->hasMany(MaterialPrice::class); }
     public function transactions()   { return $this->hasMany(Transaction::class); }
+
+    public function getOpenStatusAttribute(): array
+    {
+    try {
+        [$startRaw, $endRaw] = preg_split('/\s*[–-]\s*/u', $this->operating_hours, 2);
+
+            $now = now();
+            $open = \Carbon\Carbon::parse($startRaw)->setDate($now->year, $now->month, $now->day);
+            $close = \Carbon\Carbon::parse($endRaw)->setDate($now->year, $now->month, $now->day);
+
+            if ($now->lt($open)) {
+                return [
+                    'state' => 'closed',
+                    'label' => 'Opens in ' . $now->diffAsCarbonInterval($open)->forHumans([
+                        'parts' => 1,
+                        'short' => true,
+                    ]),
+                ];
+            }
+
+            if ($now->gt($close)) {
+                return [
+                    'state' => 'closed',
+                    'label' => 'Closed — opens tomorrow',
+                ];
+            }
+
+            return [
+                'state' => 'open',
+                'label' => 'Closes in ' . $now->diffAsCarbonInterval($close)->forHumans([
+                    'parts' => 1,
+                    'short' => true,
+                ]),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'state' => 'unknown',
+                'label' => $this->operating_hours,
+            ];
+        }
+
+    }
+
+
 }

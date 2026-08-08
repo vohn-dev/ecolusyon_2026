@@ -7,6 +7,7 @@ use App\Http\Controllers\WasteScanController;
 use App\Http\Controllers\FloodReportController;
 use App\Http\Controllers\JunkshopController;
 use App\Http\Controllers\RewardsController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,18 +15,20 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'resident'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
-
+    
     Route::get('/scan', [WasteScanController::class, 'create'])->name('scan.create');
     Route::post('/scan', [WasteScanController::class, 'store'])->name('scan.store');
     Route::get('/scan/{wasteScan}', [WasteScanController::class, 'show'])->name('scan.show');
     Route::post('/scan/{wasteScan}/confirm-category', [WasteScanController::class, 'confirmCategory'])->name('scan.confirm-category');
     Route::post('/scan/{wasteScan}/confirm-disposal', [WasteScanController::class, 'confirmDisposal'])->name('scan.confirm-disposal');
-
     Route::get('/scan/{wasteScan}/guide', [WasteScanController::class, 'guide'])->name('scan.guide');
+    Route::get('/scan/{wasteScan}/retake', [WasteScanController::class, 'retakeForm'])->name('scan.retake.form');
+    Route::match(['get', 'post'], '/scan/{wasteScan}/retake', [WasteScanController::class, 'retake'])->name('scan.retake');
 
     Route::get('/report', [FloodReportController::class, 'index'])->name('reports.index'); // "Flood Report Status" list
     Route::get('/report/create', [FloodReportController::class, 'create'])->name('reports.create');
     Route::post('/report', [FloodReportController::class, 'store'])->name('reports.store');
+    Route::post('/report/auto-detect', [FloodReportController::class, 'autoDetect'])->name('reports.auto-detect');
     Route::post('/report/{floodReport}/verify-cleanup', [FloodReportController::class, 'verifyCleanup'])->name('reports.verify-cleanup');
 
     Route::get('/market', [JunkshopController::class, 'index'])->name('market.index');
@@ -33,20 +36,19 @@ Route::middleware(['auth', 'resident'])->group(function () {
     Route::get('/market/{junkshop}', [JunkshopController::class, 'show'])->name('market.show');
     Route::post('/market/{junkshop}/schedule', [JunkshopController::class, 'schedule'])->name('market.schedule');
     
-    Route::get('/leaderboard', [RewardsController::class, 'leaderboard'])->name('rewards.leaderboard');
     Route::get('/rewards', [RewardsController::class, 'index'])->name('rewards.index');
     Route::post('/rewards/{key}/redeem', [RewardsController::class, 'redeem'])->name('rewards.redeem');
-    
-
-
+    Route::get('/leaderboard', [RewardsController::class, 'leaderboard'])->name('rewards.leaderboard');
 });
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-Route::get('/heatmap', [FloodReportController::class, 'heatmap'])->name('heatmap');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+});
 
 require __DIR__.'/auth.php';

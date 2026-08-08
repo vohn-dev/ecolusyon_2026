@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FloodReport extends Model
 {
     protected $fillable = [
-        'user_id', 'latitude', 'longitude', 'photo_path', 'severity',
+        'user_id', 'latitude', 'longitude', 'photo_path', 'photo_hash', 'severity',
         'waste_types_observed', 'status', 'verified_by_lgu',
         'cleanup_completed_at', 'points_awarded',
     ];
@@ -18,4 +18,5 @@ class FloodReport extends Model
     ];
 
     public function user() { return $this->belongsTo(User::class); }
+
 }

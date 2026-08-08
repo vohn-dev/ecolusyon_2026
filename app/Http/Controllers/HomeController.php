@@ -21,5 +21,5 @@ class HomeController extends Controller
             'activity' => $activity,
         ]);
     }
-}
 
+}
