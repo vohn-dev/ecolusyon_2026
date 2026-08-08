@@ -9,6 +9,15 @@ use App\Http\Controllers\JunkshopController;
 use App\Http\Controllers\RewardsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
+use App\Http\Controllers\OperatorDashboardController;
+use App\Http\Controllers\ShopProfileController;
+use App\Http\Controllers\MaterialPriceController;
+use App\Http\Controllers\PickupRequestController;
+use App\Http\Controllers\OperatorTransactionController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\OperatorNotificationController;
+
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -40,6 +49,34 @@ Route::middleware(['auth', 'resident'])->group(function () {
     Route::post('/rewards/{key}/redeem', [RewardsController::class, 'redeem'])->name('rewards.redeem');
     Route::get('/leaderboard', [RewardsController::class, 'leaderboard'])->name('rewards.leaderboard');
 });
+
+Route::middleware(['auth', 'junkshop'])->prefix('operator')->name('operator.')->group(function () {
+    Route::get('/onboarding', [ShopProfileController::class, 'create'])->name('onboarding');
+    Route::post('/onboarding', [ShopProfileController::class, 'store'])->name('onboarding.store');
+
+    Route::middleware('shop.registered')->group(function () {
+        Route::get('/', [OperatorDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/profile', [ShopProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ShopProfileController::class, 'update'])->name('profile.update');
+
+        Route::get('/prices', [MaterialPriceController::class, 'edit'])->name('prices.edit');
+        Route::put('/prices', [MaterialPriceController::class, 'update'])->name('prices.update');
+
+        Route::get('/requests', [PickupRequestController::class, 'index'])->name('requests.index');
+        Route::post('/requests/{pickupRequest}/accept', [PickupRequestController::class, 'accept'])->name('requests.accept');
+        Route::post('/requests/{pickupRequest}/decline', [PickupRequestController::class, 'decline'])->name('requests.decline');
+
+        Route::get('/transactions', [OperatorTransactionController::class, 'index'])->name('transactions.index');
+        Route::post('/transactions', [OperatorTransactionController::class, 'store'])->name('transactions.store');
+
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
+
+        Route::get('/notifications', [OperatorNotificationController::class, 'index'])->name('notifications.index');
+    });
+});
+
 
 
 Route::middleware('auth')->group(function () {
