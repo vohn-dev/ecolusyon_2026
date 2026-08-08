@@ -2,14 +2,18 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::middleware(['auth', 'resident'])->group(function () {
-    
+    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+
+    // scan.*, reports.*, market.*, rewards.* are added in tutorials 05-08
 });
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
