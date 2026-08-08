@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WasteScanController;
 use App\Http\Controllers\FloodReportController;
+use App\Http\Controllers\JunkshopController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,6 +27,11 @@ Route::middleware(['auth', 'resident'])->group(function () {
     Route::post('/report', [FloodReportController::class, 'store'])->name('reports.store');
     Route::post('/report/{floodReport}/verify-cleanup', [FloodReportController::class, 'verifyCleanup'])->name('reports.verify-cleanup');
 
+    Route::get('/market', [JunkshopController::class, 'index'])->name('market.index');
+    Route::get('/market/history', [JunkshopController::class, 'history'])->name('market.history');
+    Route::get('/market/{junkshop}', [JunkshopController::class, 'show'])->name('market.show');
+    Route::post('/market/{junkshop}/schedule', [JunkshopController::class, 'schedule'])->name('market.schedule');
+    
 
 });
 
