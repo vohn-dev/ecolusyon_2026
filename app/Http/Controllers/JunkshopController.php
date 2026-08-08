@@ -6,6 +6,7 @@ use App\Models\Junkshop;
 use App\Models\Transaction;
 use App\Services\PointsService;
 use Illuminate\Http\Request;
+use App\Models\PickupRequest;
 
 class JunkshopController extends Controller
 {
@@ -45,7 +46,7 @@ class JunkshopController extends Controller
         return view('market.show', compact('junkshop'));
     }
 
-    public function schedule(Request $request, Junkshop $junkshop, PointsService $points)
+    public function schedule(Request $request, Junkshop $junkshop)
     {
         $validated = $request->validate([
             'material_type' => ['required', 'string'],
@@ -53,33 +54,23 @@ class JunkshopController extends Controller
             'is_ewaste' => ['nullable', 'boolean'],
         ]);
 
-        $price = $junkshop->materialPrices()
+        $junkshop->materialPrices()
             ->where('material_type', $validated['material_type'])
-            ->firstOrFail(); 
+            ->firstOrFail(); // still enforces: material must have an active price row
 
-        $isEwaste = (bool) ($validated['is_ewaste'] ?? false);
-        $priceTotal = round($price->price_per_kg * $validated['weight_kg'], 2);
-
-        $transaction = Transaction::create([
-            'household_user_id' => $request->user()->id,
+        PickupRequest::create([
+            'resident_user_id' => $request->user()->id,
             'junkshop_id' => $junkshop->id,
             'material_type' => $validated['material_type'],
-            'weight_kg' => $validated['weight_kg'],
-            'price_total' => $priceTotal,
-            'is_ewaste' => $isEwaste,
-            'routed_to_tsd' => $isEwaste && $junkshop->is_accredited_tsd,
-            'epr_credit_generated' => false,
+            'estimated_weight_kg' => $validated['weight_kg'],
+            'is_ewaste' => (bool) ($validated['is_ewaste'] ?? false),
+            'status' => 'pending',
         ]);
 
-        $basePoints = 10 + (int) floor($validated['weight_kg'] * 5);
-        $totalPoints = $transaction->routed_to_tsd ? $basePoints * 2 : $basePoints;
-
-        $ledger = $points->award($request->user(), 'junkconnect_transaction', $totalPoints, $transaction->id);
-        $transaction->update(['points_awarded' => $ledger->points_earned]);
-
-        return redirect()->route('market.history')
-            ->with('status', "Transaction logged — ₱{$priceTotal} · +{$totalPoints} pts!");
+        return redirect()->route('market.index')
+            ->with('status', 'Request sent! ' . $junkshop->name . ' will accept or decline it shortly.');
     }
+
 
     public function history(Request $request)
     {
@@ -89,4 +80,6 @@ class JunkshopController extends Controller
 
         return view('market.history', compact('transactions'));
     }
+
+    
 }
