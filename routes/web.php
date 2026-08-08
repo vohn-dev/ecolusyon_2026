@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WasteScanController;
 use App\Http\Controllers\FloodReportController;
 use App\Http\Controllers\JunkshopController;
+use App\Http\Controllers\RewardsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +33,11 @@ Route::middleware(['auth', 'resident'])->group(function () {
     Route::get('/market/{junkshop}', [JunkshopController::class, 'show'])->name('market.show');
     Route::post('/market/{junkshop}/schedule', [JunkshopController::class, 'schedule'])->name('market.schedule');
     
+    Route::get('/leaderboard', [RewardsController::class, 'leaderboard'])->name('rewards.leaderboard');
+    Route::get('/rewards', [RewardsController::class, 'index'])->name('rewards.index');
+    Route::post('/rewards/{key}/redeem', [RewardsController::class, 'redeem'])->name('rewards.redeem');
+    
+
 
 });
 

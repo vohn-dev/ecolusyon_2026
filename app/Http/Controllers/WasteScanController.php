@@ -31,7 +31,6 @@ class WasteScanController extends Controller
             'item_description' => $result['description'],
         ]);
 
-        // +5 pts is awarded on every scan regardless of confidence (per the proposal's points table)
         $ledger = $points->award($request->user(), 'waste_scan', 5, $wasteScan->id);
         $wasteScan->update(['points_awarded' => $ledger->points_earned]);
 
@@ -48,7 +47,6 @@ class WasteScanController extends Controller
         return view('scan.result', compact('scan', 'isLowConfidence'));
     }
 
-    // 5a: low-confidence human-in-the-loop correction (UC-01 alt flow)
     public function confirmCategory(Request $request, WasteScan $wasteScan)
     {
         $this->authorizeOwner($wasteScan);

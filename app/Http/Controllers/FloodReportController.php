@@ -46,7 +46,6 @@ class FloodReportController extends Controller
             ->with('status', 'Report submitted — it will appear on the heatmap once verified.');
     }
 
-    // UC-04 alt flow 5: resident follow-up confirmation after LGU marks "Cleaned"
     public function verifyCleanup(Request $request, FloodReport $report, PointsService $points)
     {
         abort_unless($report->user_id === $request->user()->id, 403);
@@ -58,7 +57,6 @@ class FloodReportController extends Controller
         return back()->with('status', 'Thanks for confirming — +5 pts!');
     }
 
-    // Public transparency layer (no auth) — proposal section 4.3
     public function heatmap()
     {
         $reports = FloodReport::whereIn('status', ['verified', 'dispatched', 'cleaned', 'confirmed'])

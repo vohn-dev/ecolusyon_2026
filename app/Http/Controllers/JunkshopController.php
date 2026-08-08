@@ -43,10 +43,6 @@ class JunkshopController extends Controller
         $isEwaste = (bool) ($validated['is_ewaste'] ?? false);
         $priceTotal = round($price->price_per_kg * $validated['weight_kg'], 2);
 
-        // NOTE — dummy simulation: a real Junkshop Operator dashboard would let the
-        // operator Accept/Reject the pickup request (see Wireflow 3's decision diamond).
-        // That role is out of scope here, so we auto-accept and log the transaction
-        // immediately, exactly as if the operator had tapped "Accept".
         $transaction = Transaction::create([
             'household_user_id' => $request->user()->id,
             'junkshop_id' => $junkshop->id,
@@ -58,7 +54,6 @@ class JunkshopController extends Controller
             'epr_credit_generated' => false,
         ]);
 
-        // points table: +10 per transaction, +5/kg, 2x multiplier if e-waste routed to accredited TSD
         $basePoints = 10 + (int) floor($validated['weight_kg'] * 5);
         $totalPoints = $transaction->routed_to_tsd ? $basePoints * 2 : $basePoints;
 
